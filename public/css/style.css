@@ -1,0 +1,232 @@
+/* Общие стили */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", "Roboto", sans-serif;
+  background-color: #f4f6f9;
+  color: #1e293b;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Навигация */
+header {
+  background-color: #1e293b;
+  padding: 1rem 2rem;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+
+nav a:hover {
+  opacity: 0.7;
+}
+
+/* Контейнеры */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.form-container,
+.error-container,
+.task-container {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 2rem auto;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Формы */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f9fafb;
+  transition: border-color 0.3s;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Кнопки */
+.btn,
+.cta-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #4a63e7;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn:hover,
+.cta-btn:hover {
+  background-color: #3b4ec1;
+  transform: translateY(-2px);
+}
+
+/* Сообщения об ошибках */
+.error {
+  color: #ef4444;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* Задания */
+.task-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.task {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.task:hover {
+  transform: translateY(-5px);
+}
+
+.task h3 {
+  color: #4a63e7;
+  margin-bottom: 0.5rem;
+}
+
+.task p {
+  color: #6b7280;
+}
+
+/* Hero секция */
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("https://via.placeholder.com/1500x800") center/cover no-repeat;
+  text-align: center;
+  color: #fff;
+}
+
+.hero h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+/* Footer */
+footer {
+  background-color: #1e293b;
+  color: #d1d5db;
+  text-align: center;
+  padding: 1rem;
+  margin-top: auto;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav {
+    margin-top: 1rem;
+  }
+
+  nav a {
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+  }
+
+  .form-container,
+  .error-container,
+  .task-container {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .hero h2 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+}
