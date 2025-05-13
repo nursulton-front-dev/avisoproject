@@ -153,8 +153,13 @@
       <nav>
         <a href="/dashboard">Задания</a>
         <a href="/create-task">Создать задание</a>
+        <% if (!user) { %>
         <a href="/login">Войти</a>
         <a href="/register">Регистрация</a>
+        <% } else { %>
+        <a href="/logout">Выйти</a>
+        <a href="/profile">Профиль</a>
+        <% } %>
       </nav>
     </header>
     <div class="create-task-container">
@@ -205,15 +210,13 @@
         const description = form.description.value.trim();
         const token = getCookie("token");
 
-        // Логи для отладки
         console.log("Document cookie:", document.cookie);
         console.log("Extracted token:", token);
 
         if (!token) {
           console.error("No token found in cookies");
           errorDiv.textContent = "Токен не найден. Пожалуйста, войдите снова.";
-          isSubmitting = false;
-          submitBtn.disabled = false;
+          window.location.href = "/login";
           return;
         }
 
@@ -225,7 +228,7 @@
           });
           const response = await fetch("/api/items", {
             method: "POST",
-            credentials: "include", // Убедимся, что куки отправляются автоматически
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -240,10 +243,16 @@
           if (response.ok) {
             console.log("Item created successfully");
             alert("Задание создано!");
-            form.reset(); // Очищаем форму
+            form.reset();
           } else {
             console.error("Create item failed:", data.error);
             errorDiv.textContent = data.error || "Ошибка создания задания";
+            if (
+              data.error === "Неверный токен" ||
+              data.error === "Нет токена"
+            ) {
+              window.location.href = "/login";
+            }
           }
         } catch (err) {
           console.error("Network error:", err);

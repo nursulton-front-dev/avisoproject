@@ -41,7 +41,6 @@ function rateLimitMiddleware(req, res, next) {
     rateLimit[ip] = [];
   }
 
-  // Удаляем устаревшие запросы
   rateLimit[ip] = rateLimit[ip].filter(timestamp => now - timestamp < RATE_WINDOW);
 
   if (rateLimit[ip].length >= RATE_LIMIT) {
@@ -124,6 +123,29 @@ const db = new sqlite3.Database(dbPath, (err) => {
     process.exit(1);
   }
   console.log('Connected to database');
+  // Проверка и миграция схемы
+  db.all("PRAGMA table_info(users)", (err, rows) => {
+    if (err) {
+      console.error('Failed to check users table schema:', err.message);
+      return;
+    }
+    if (!rows || rows.length === 0) {
+      console.error('No columns found for users table');
+      return;
+    }
+    const columns = rows.map(row => row.name);
+    console.log('Columns in users table:', columns);
+    if (!columns.includes('email')) {
+      console.log('Adding email column to users table');
+      db.run('ALTER TABLE users ADD COLUMN email TEXT UNIQUE', (err) => {
+        if (err) {
+          console.error('Failed to add email column:', err.message);
+        } else {
+          console.log('Email column added successfully');
+        }
+      });
+    }
+  });
 });
 
 // Middleware для проверки токена
@@ -352,28 +374,30 @@ app.get('/profile', (req, res) => {
   }
   jwt.verify(token, SECRET_KEY, (err, decoded) => {
     if (err) {
-      console.error('Profile JWT error:', err);
+      console.error('Profile JWT error:', err.message);
       return res.render('profile', { isAuthenticated: false, username: null, email: null, role: null, bio: null, balance: null, items: [] });
     }
+    console.log('Profile - Decoded userId:', decoded.userId);
     db.get('SELECT username, email, role, bio, balance FROM users WHERE id = ?', [decoded.userId], (err, user) => {
       if (err) {
-        console.error('Profile DB error:', err);
+        console.error('Profile DB error:', err.message);
         return res.status(500).send('Ошибка сервера');
       }
       if (!user) {
-        console.error('Profile User not found for ID:', decoded.userId);
-        return res.status(404).send('Пользователь не найден');
+        console.error('Profile - User not found for ID:', decoded.userId);
+        return res.render('profile', { isAuthenticated: false, username: null, email: null, role: null, bio: null, balance: null, items: [] });
       }
+      console.log('Profile - User found:', user);
       if (user.role === 'seller') {
         db.all('SELECT * FROM items WHERE userId = ?', [decoded.userId], (err, items) => {
           if (err) {
-            console.error('Profile Items query error:', err);
+            console.error('Profile Items query error:', err.message);
             return res.status(500).send('Ошибка сервера');
           }
           res.render('profile', { 
             isAuthenticated: true, 
             username: user.username, 
-            email: user.email, 
+            email: user.email || 'Не указан', 
             role: user.role, 
             bio: user.bio, 
             balance: user.balance,
@@ -384,7 +408,7 @@ app.get('/profile', (req, res) => {
         res.render('profile', { 
           isAuthenticated: true, 
           username: user.username, 
-          email: user.email, 
+          email: user.email || 'Не указан', 
           role: user.role, 
           bio: user.bio, 
           balance: user.balance,
